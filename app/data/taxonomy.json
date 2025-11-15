@@ -1,0 +1,88 @@
+{
+  "version": "1.1",
+  "categories": [
+    {
+      "id": "grocery",
+      "name": "Grocery/Daily Essentials",
+      "aliases": [
+        "kirana",
+        "mart",
+        "store",
+        "provision",
+        "general store",
+        "veg",
+        "fruit"
+      ]
+    },
+    {
+      "id": "food",
+      "name": "Food & Snacks",
+      "aliases": [
+        "chai",
+        "pani puri",
+        "street food",
+        "snacks",
+        "juice",
+        "coffee",
+        "chips",
+        "food",
+        "tea"
+        ,"milkshake", 
+        "milkshakes", 
+        "shake"
+      ]
+    },
+    {
+      "id": "shopping",
+      "name": "Shopping & Misc Retail",
+      "aliases": [
+        "toys",
+        "clothes",
+        "street shopping",
+        "bazaar",
+        "myntra",
+        "amazon",
+        "flipkart",
+        "amz"
+      ]
+    },
+   {"id":"personal","name":"Personal Care & Services","aliases":["haircut","parlour","salon","barber","shoe","shoe polish","shoecare"]}
+,
+    {
+      "id": "fuel",
+      "name": "Fuel",
+      "aliases": [
+        "hpcl",
+        "bpcl",
+        "shell",
+        "petrol",
+        "diesel",
+        "fuel"
+      ]
+    },
+    {
+      "id": "utilities",
+      "name": "Utilities & Bills",
+      "aliases": [
+        "electricity",
+        "water",
+        "internet",
+        "broadband",
+        "recharge",
+        "bill"
+      ]
+    },
+    {
+      "id": "other",
+      "name": "Other/Unknown",
+      "aliases": []
+    }
+  ],
+  "vpa_aliases": {
+    "gopalstores": "grocery",
+    "gopalkirana": "grocery",
+    "amzmk": "shopping"
+  }
+
+  
+}

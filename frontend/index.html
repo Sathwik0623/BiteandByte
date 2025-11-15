@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Byte&Bite - Transaction Categorizer</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;background:#f4f6fb;padding:40px;}
+    .card{max-width:720px;margin:auto;background:#fff;border-radius:8px;padding:20px;box-shadow:0 6px 18px rgba(0,0,0,0.06);}
+    input, textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ddd;border-radius:6px;}
+    button{background:#2563eb;color:#fff;padding:10px 16px;border:none;border-radius:6px;cursor:pointer;}
+    .result{background:#eef2ff;padding:12px;border-radius:6px;margin-top:12px;}
+    .chip{display:inline-block;padding:6px 10px;background:#eef;border-radius:20px;margin:4px;}
+    .small{font-size:0.9em;color:#555}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Byte&amp;Bite — Transaction Categorizer (Demo)</h2>
+    <p class="small">Enter transaction description (e.g., "Gopal Kirana 50", "chips 10", "AMZ*MKTP 999")</p>
+    <textarea id="txn" rows="2" placeholder="Enter transaction text..."></textarea>
+    <input id="amount" type="number" placeholder="Amount (optional)"/>
+    <div style="display:flex;gap:8px;">
+      <button onclick="doPredict()">Predict</button>
+      <button onclick="doSuggest()">Suggest</button>
+    </div>
+    <div id="out" class="result" style="display:none"></div>
+
+   <h3>Feedback / Quick Confirm</h3>
+<input id="txid" placeholder="Transaction ID (from prediction)"/>
+<input id="cor" placeholder="Corrected category (e.g., grocery)"/>
+<br/>
+<label><input type="checkbox" id="add_alias"/> Also suggest adding this description as an alias for the corrected category</label>
+<button onclick="sendFeedback()">Send Feedback</button>
+
+
+    <h4>Notes</h4>
+    <p class="small">This demo uses local heuristics when no ML model is available. To enable a real FinBERT model, set MODEL_PATH env var on the backend and provide a compatible model.</p>
+  </div>
+
+<script>
+const API = "http://localhost:8000";
+
+async function doPredict(){
+  const txn = document.getElementById("txn").value;
+  const amt = document.getElementById("amount").value;
+  const res = await fetch(API + "/predict", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({transaction: txn, amount: amt?parseFloat(amt):null})
+  });
+  const data = await res.json();
+  document.getElementById("out").style.display="block";
+  document.getElementById("out").innerHTML = `<b>Transaction ID:</b> ${data.transaction_id}<br/>
+  <b>Category:</b> ${data.category} <br/><b>Confidence:</b> ${data.confidence} <br/><b>Method:</b> ${data.method}`;
+  document.getElementById("txid").value = data.transaction_id;
+}
+
+async function doSuggest(){
+  const txn = document.getElementById("txn").value;
+  const amt = document.getElementById("amount").value;
+  const payload = { transaction: txn, amount: amt ? parseFloat(amt) : null };
+  const res = await fetch(API + "/suggest", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json();
+  let html = "<b>Suggestions:</b><br/>";
+  if (!data.suggestions) {
+    html += "<div class='small'>No suggestions returned</div>";
+  } else {
+    data.suggestions.forEach(s=>{
+      html += `<div class="chip">${s.category} (${(s.confidence*100).toFixed(0)}%) — ${s.reason}</div>`;
+    });
+  }
+  document.getElementById("out").style.display="block";
+  document.getElementById("out").innerHTML = html;
+}
+
+
+async function sendFeedback(){
+  const txid = parseInt(document.getElementById("txid").value || "0");
+  const cor = document.getElementById("cor").value;
+  const addAlias = document.getElementById("add_alias").checked;
+  const txnText = document.getElementById("txn").value || "";
+  if(!txid || !cor){ alert("provide transaction id and corrected category"); return; }
+  const payload = {
+    transaction_id: txid,
+    corrected_category: cor,
+    transaction_text: txnText,
+    add_alias: addAlias
+  };
+  const res = await fetch(API + "/feedback", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json();
+  alert("Feedback saved. Vote: " + JSON.stringify(data.vote));
+}
+
+</script>
+</body>
+</html>
