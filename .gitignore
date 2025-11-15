@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Environments
+.env
+.venv/
+venv/
+env/
+
+# Virtualenv metadata
+.Python
+
+# Byte & Bite artifacts
+*.pth
+
+# Jupyter
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Models (optional if you later add ML weights)
+models/
+*.bin
